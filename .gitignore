@@ -28,3 +28,4 @@ Kernel/Config/Files/ZZZProcessManagement.pm
 .vscode/
 .s3cfg
 Kernel/Config/Files/ZZZAAuto.pm
+Kernel/Config.pm
