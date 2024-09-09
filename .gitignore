@@ -25,6 +25,6 @@ sqlnet.log
 .env
 Kernel/Config/Files/ZZZACL.pm
 Kernel/Config/Files/ZZZProcessManagement.pm
-Kernel/Config/Files/ZZZAAuto.pm
 .vscode/
 .s3cfg
+Kernel/Config/Files/ZZZAAuto.pm
