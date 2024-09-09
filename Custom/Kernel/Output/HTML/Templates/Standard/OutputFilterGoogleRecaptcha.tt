@@ -1,0 +1,57 @@
+<script type="text/javascript">//<![CDATA[
+    var renderGoogleInvisibleRecaptcha = function() {
+        for (var i = 0; i < document.forms.length; ++i) {
+            var form = document.forms[i];
+            var holder = form.querySelector('.recaptcha-holder');
+            if (null === holder){
+                continue;
+            }
+
+            (function(frm, holder){
+
+                var holderId = grecaptcha.render(holder, {
+                    'sitekey': '[% Data.GoogleSiteKey %]',
+                    'size': 'invisible',
+                    'badge' : 'bottomright', // possible values: bottomright, bottomleft, inline
+                    'callback' : function (recaptchaToken) {                         
+                        HTMLFormElement.prototype.submit.call(frm);
+                    }
+                });                 
+
+                frm.onsubmit = function (evt) {
+                    evt.preventDefault();
+
+                    // Verifica se todos os campos obrigatórios estão preenchidos
+                    var allValid = validateRequiredFields(frm);
+                    if (allValid) {
+                        submitFormWithRecaptcha(holderId, frm);
+                    }
+                };
+
+            })(form, holder);
+        }
+    },
+    
+    // Função para validar campos obrigatórios
+    validateRequiredFields = function (form) {
+        var isValid = true;
+        var requiredFields = form.querySelectorAll('.Validate_Required');
+        
+        requiredFields.forEach(function(field) {
+            if (field.value.trim() === '') {
+                isValid = false;
+            }
+        });
+
+        return isValid;
+    },
+
+    submitFormWithRecaptcha = async function (holderID, form) {
+        try {
+            await grecaptcha.execute(holderID);
+        } catch (error) {
+            console.error('Erro ao gerar o token Recaptcha:', error);
+        }                    
+    };  
+//]]></script>
+<script src="https://www.google.com/recaptcha/api.js?onload=renderGoogleInvisibleRecaptcha&render=explicit" async defer></script>

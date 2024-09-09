@@ -67,7 +67,11 @@ sub Load {
     # ---------------------------------------------------- #
     $Self->{Home} = '/opt/otrs';
 $Self->{'SecureMode'} = '1';
+<<<<<<< HEAD
 $Self->{'FQDN'} = 'otrs-mpIa8aj4';
+=======
+$Self->{'FQDN'} = 'otrs-iKiWaZLA';
+>>>>>>> master
 $Self->{'DatabasePort'} = '5432';
 
     # ---------------------------------------------------- #
