@@ -1,0 +1,55 @@
+<script type="text/javascript">//<![CDATA[
+// Armazena a função original validate do jQuery Validate
+var originalValidate = $.fn.validate;
+
+// Sobrescreve o método validate
+$.fn.validate = function(options) {
+    if (options && typeof options.submitHandler === 'function') {
+        var originalSubmitHandler = options.submitHandler;
+        options.submitHandler = function(form) {
+            waitFor10Seconds().then(function(result) {
+                return originalSubmitHandler.call(this, form);
+            });
+        };
+    }
+
+    // Chama a função validate original
+    return originalValidate.call(this, options);
+};
+
+function waitFor10Seconds() {
+    return new Promise(function(resolve) {
+        setTimeout(function() {
+            resolve(true); // Retorna true após 10 segundos
+        }, 10000);
+    });
+};
+    var renderGoogleInvisibleRecaptcha = function() {
+        for (var i = 0; i < document.forms.length; ++i) {
+            var form = document.forms[i];
+            var holder = form.querySelector('.recaptcha-holder');
+            if (null === holder){
+                continue;
+            }
+
+            (function(frm){
+
+                var holderId = grecaptcha.render(holder,{
+                    'sitekey': '[% Data.GoogleSiteKey %]',
+                    'size': 'invisible',
+                    'badge' : 'bottomright', // possible values: bottomright, bottomleft, inline
+                    'callback' : function (recaptchaToken) {
+                        HTMLFormElement.prototype.submit.call(frm);
+                    }
+                });
+
+                frm.onsubmit = function (evt){
+                    evt.preventDefault();
+                    grecaptcha.execute(holderId);
+                };
+
+            })(form);
+        }
+    };
+//]]></script>
+<script src="https://www.google.com/recaptcha/api.js?onload=renderGoogleInvisibleRecaptcha&render=explicit" async defer></script>

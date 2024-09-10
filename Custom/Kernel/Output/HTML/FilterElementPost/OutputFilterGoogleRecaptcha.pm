@@ -35,9 +35,7 @@ sub Run {
 	~;
 
 	my $FieldSignup = qq~
-	<div class="NewLine">
 	<div class="recaptcha-holder"></div>
-	</div>
 	~;	
 
 	my $FormGRecaptcha = qq~

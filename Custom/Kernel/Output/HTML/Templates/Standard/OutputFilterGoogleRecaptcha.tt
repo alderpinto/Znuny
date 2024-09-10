@@ -1,4 +1,30 @@
 <script type="text/javascript">//<![CDATA[
+    // Armazena a função original validate do jQuery Validate
+    var originalValidate = $.fn.validate;
+
+    // Sobrescreve o método validate
+    $.fn.validate = function(options) {
+        if (options && typeof options.submitHandler === 'function') {
+            var originalSubmitHandler = options.submitHandler;
+            options.submitHandler = function(form) {
+                waitFor30Seconds().then(function(result) {
+                    return originalSubmitHandler.call(this, form);
+                });
+            };
+        }
+
+        // Chama a função validate original
+        return originalValidate.call(this, options);
+    };
+
+    function waitFor30Seconds() {
+        return new Promise(function(resolve) {
+            setTimeout(function() {
+                resolve(true); // Retorna true após 10 segundos
+            }, 30000);
+        });
+    };
+
     var renderGoogleInvisibleRecaptcha = function() {
         for (var i = 0; i < document.forms.length; ++i) {
             var form = document.forms[i];
@@ -18,34 +44,29 @@
                     }
                 });                 
 
-                frm.onsubmit = function (evt) {
+                frm.onsubmit = function (evt){
                     evt.preventDefault();
 
-                    // Verifica se todos os campos obrigatórios estão preenchidos
-                    var allValid = validateRequiredFields(frm);
-                    if (allValid) {
+                    // Verifica todos os campos obrigatórios
+                    var requiredFields = frm.querySelectorAll('.Validate_Required');
+                    var allFieldsValid = true;
+
+                    requiredFields.forEach(function(field) {
+                        if (!field.value.trim()) {
+                            allFieldsValid = false;
+                        } 
+                    });
+
+                    if (!allFieldsValid) {
+                        alert('Por favor, preencha todos os campos obrigatórios.');
+                    } else {  
                         submitFormWithRecaptcha(holderId, frm);
-                    }
+                    }                 
                 };
 
             })(form, holder);
         }
     },
-    
-    // Função para validar campos obrigatórios
-    validateRequiredFields = function (form) {
-        var isValid = true;
-        var requiredFields = form.querySelectorAll('.Validate_Required');
-        
-        requiredFields.forEach(function(field) {
-            if (field.value.trim() === '') {
-                isValid = false;
-            }
-        });
-
-        return isValid;
-    },
-
     submitFormWithRecaptcha = async function (holderID, form) {
         try {
             await grecaptcha.execute(holderID);
@@ -53,5 +74,6 @@
             console.error('Erro ao gerar o token Recaptcha:', error);
         }                    
     };  
+
 //]]></script>
 <script src="https://www.google.com/recaptcha/api.js?onload=renderGoogleInvisibleRecaptcha&render=explicit" async defer></script>
